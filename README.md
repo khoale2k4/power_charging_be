@@ -97,103 +97,142 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 
-# Tuya Backend API Service
+# Tuya Backend API
 
-Dự án backend NestJS để tích hợp với Tuya Cloud-to-Cloud Connection API.
+Một backend service được xây dựng bằng NestJS để tích hợp với Tuya IoT Platform API, cung cấp các endpoint để quản lý thiết bị thông minh, điều khiển thiết bị, lập lịch và theo dõi thống kê.
 
-## Tính năng
+## 🚀 Tính năng
 
-- **Authentication**: Lấy và refresh access token
-- **Assets Management**: Quản lý assets của user
-- **Device Management**: Quản lý devices trong assets
-- **Device Control**: Gửi lệnh điều khiển devices
-- **Device Status**: Lấy trạng thái devices
-- **Statistics**: Lấy thống kê sử dụng điện
-- **Timer Management**: Quản lý timer cho devices
+- **Xác thực & Quản lý Token**: Lấy và refresh access token từ Tuya API
+- **Quản lý Assets**: Lấy danh sách assets và thiết bị
+- **Điều khiển Thiết bị**: Gửi lệnh điều khiển thiết bị (bật/tắt, điều chỉnh thông số)
+- **Theo dõi Trạng thái**: Lấy trạng thái hiện tại của thiết bị
+- **Thống kê & Báo cáo**: Lấy thống kê sử dụng theo thời gian
+- **Quản lý Timer**: Thêm, tìm kiếm và xóa lịch trình thiết bị
+- **Xử lý Lỗi**: Error handling toàn diện với HTTP status codes phù hợp
 
-## Cài đặt
+## 🛠️ Công nghệ sử dụng
 
-1. Clone repository:
+- **Framework**: NestJS 11.x
+- **Language**: TypeScript
+- **HTTP Client**: Axios
+- **Testing**: Jest
+- **Code Quality**: ESLint, Prettier
+
+## 📋 Yêu cầu hệ thống
+
+- Node.js 18+ 
+- npm hoặc yarn
+- Tuya Developer Account với API credentials
+
+## 🔧 Cài đặt
+
+### 1. Clone repository
+
 ```bash
 git clone <repository-url>
 cd tuya_be
 ```
 
-2. Cài đặt dependencies:
+### 2. Cài đặt dependencies
+
 ```bash
 npm install
 ```
 
-3. Tạo file `.env` từ `env.example`:
+### 3. Cấu hình môi trường
+
+Copy file `.env.example` thành `.env` và điền thông tin cần thiết:
+
 ```bash
 cp env.example .env
 ```
 
-4. Cấu hình các biến môi trường trong file `.env`:
+Cập nhật file `.env` với thông tin Tuya API của bạn:
+
 ```env
 # Tuya API Configuration
 TUYA_BASE_URL=https://openapi.tuyaeu.com
 TUYA_CLIENT_ID=your_client_id_here
 TUYA_SECRET=your_secret_here
-TUYA_USER_ID=beu1755919785468Ht4d
+TUYA_USER_ID=your_user_id_here
+TUYA_CODE=your_code_here
 
 # Application Configuration
 PORT=3000
 NODE_ENV=development
 ```
 
-## Chạy ứng dụng
+### 4. Chạy ứng dụng
 
-### Development
 ```bash
+# Development mode
 npm run start:dev
-```
 
-### Production
-```bash
+# Production mode
 npm run build
 npm run start:prod
 ```
 
-## API Endpoints
+Ứng dụng sẽ chạy tại `http://localhost:3000`
+
+## 📚 API Endpoints
 
 ### Authentication
-- `GET /tuya/auth/token` - Lấy access token
-- `GET /tuya/auth/refresh` - Refresh access token
-- `GET /tuya/auth/tokens` - Xem tokens hiện tại
 
-### Assets
-- `GET /tuya/assets` - Lấy danh sách assets của user
-- `GET /tuya/assets/:assetId/devices` - Lấy devices của một asset
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| `GET` | `/tuya/auth/token` | Lấy access token mới |
+| `GET` | `/tuya/auth/refresh` | Refresh access token |
+| `GET` | `/tuya/auth/tokens` | Xem tokens hiện tại |
+
+### Assets & Devices
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| `GET` | `/tuya/assets` | Lấy danh sách assets |
+| `GET` | `/tuya/assets/:assetId/devices` | Lấy thiết bị của asset |
 
 ### Device Control
-- `POST /tuya/devices/:deviceId/command` - Gửi lệnh điều khiển device
-- `GET /tuya/devices/:deviceId/status` - Lấy trạng thái device
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| `POST` | `/tuya/devices/:deviceId/command` | Gửi lệnh điều khiển thiết bị |
+| `GET` | `/tuya/devices/:deviceId/status` | Lấy trạng thái thiết bị |
 
 ### Statistics
-- `GET /tuya/devices/:deviceId/statistics` - Lấy thống kê theo thời gian
-- `GET /tuya/devices/:deviceId/statistics/total` - Lấy tổng thống kê
 
-### Timer Management
-- `POST /tuya/devices/:deviceId/timers` - Thêm timer
-- `GET /tuya/devices/:deviceId/timers` - Tìm kiếm timers
-- `DELETE /tuya/devices/:deviceId/timers` - Xóa timers
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| `GET` | `/tuya/devices/:deviceId/statistics` | Lấy thống kê theo thời gian |
+| `GET` | `/tuya/devices/:deviceId/statistics/total` | Lấy tổng thống kê |
 
-## Ví dụ sử dụng
+### Timers
 
-### Lấy access token
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| `POST` | `/tuya/devices/:deviceId/timers` | Thêm timer mới |
+| `GET` | `/tuya/devices/:deviceId/timers` | Tìm kiếm timers |
+| `DELETE` | `/tuya/devices/:deviceId/timers` | Xóa timers |
+
+## 💡 Ví dụ sử dụng
+
+### 1. Lấy access token
+
 ```bash
 curl -X GET "http://localhost:3000/tuya/auth/token"
 ```
 
-### Lấy danh sách assets
+### 2. Lấy danh sách assets
+
 ```bash
 curl -X GET "http://localhost:3000/tuya/assets"
 ```
 
-### Gửi lệnh điều khiển device
+### 3. Điều khiển thiết bị (bật/tắt)
+
 ```bash
-curl -X POST "http://localhost:3000/tuya/devices/bf8017f97b3f5a6f52a8ih/command" \
+curl -X POST "http://localhost:3000/tuya/devices/DEVICE_ID/command" \
   -H "Content-Type: application/json" \
   -d '{
     "code": "switch",
@@ -201,17 +240,25 @@ curl -X POST "http://localhost:3000/tuya/devices/bf8017f97b3f5a6f52a8ih/command"
   }'
 ```
 
-### Lấy trạng thái device
+### 4. Lấy trạng thái thiết bị
+
 ```bash
-curl -X GET "http://localhost:3000/tuya/devices/bf8017f97b3f5a6f52a8ih/status?command_code=switch"
+curl -X GET "http://localhost:3000/tuya/devices/DEVICE_ID/status?command_code=switch"
 ```
 
-### Thêm timer
+### 5. Lấy thống kê sử dụng
+
 ```bash
-curl -X POST "http://localhost:3000/tuya/devices/bf8017f97b3f5a6f52a8ih/timers" \
+curl -X GET "http://localhost:3000/tuya/devices/DEVICE_ID/statistics?code=add_ele&start_time=2025082400&end_time=2025082423&stat_type=sum&time_type=hours"
+```
+
+### 6. Thêm timer
+
+```bash
+curl -X POST "http://localhost:3000/tuya/devices/DEVICE_ID/timers" \
   -H "Content-Type: application/json" \
   -d '{
-    "user_id": "beu1755919785468Ht4d",
+    "user_id": "USER_ID",
     "alias_name": "Morning Timer",
     "category": "dlq",
     "time": "07:00",
@@ -227,43 +274,152 @@ curl -X POST "http://localhost:3000/tuya/devices/bf8017f97b3f5a6f52a8ih/timers" 
   }'
 ```
 
-### Lấy thống kê
+## 🔍 Sử dụng với JavaScript/Node.js
+
+### Fetch API
+
+```javascript
+async function getAssets() {
+  try {
+    const response = await fetch('http://localhost:3000/tuya/assets');
+    const data = await response.json();
+    console.log('Assets:', data);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+async function sendDeviceCommand(deviceId, code, value) {
+  try {
+    const response = await fetch(`http://localhost:3000/tuya/devices/${deviceId}/command`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code, value }),
+    });
+    const data = await response.json();
+    console.log('Command result:', data);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+```
+
+### Axios
+
+```javascript
+const axios = require('axios');
+
+async function getAssets() {
+  try {
+    const response = await axios.get('http://localhost:3000/tuya/assets');
+    console.log('Assets:', response.data);
+  } catch (error) {
+    console.error('Error:', error.response?.data || error.message);
+  }
+}
+
+async function sendDeviceCommand(deviceId, code, value) {
+  try {
+    const response = await axios.post(`http://localhost:3000/tuya/devices/${deviceId}/command`, {
+      code,
+      value,
+    });
+    console.log('Command result:', response.data);
+  } catch (error) {
+    console.error('Error:', error.response?.data || error.message);
+  }
+}
+```
+
+## 🧪 Testing
+
 ```bash
-curl -X GET "http://localhost:3000/tuya/devices/bf8017f97b3f5a6f52a8ih/statistics?code=add_ele&start_time=2025082400&end_time=2025082423&stat_type=sum&time_type=hours"
+# Unit tests
+npm run test
+
+# Test coverage
+npm run test:cov
+
+# E2E tests
+npm run test:e2e
+
+# Test watch mode
+npm run test:watch
 ```
 
-## Cấu trúc dự án
+## 🚀 Deployment
 
-```
-src/
-├── controllers/
-│   └── tuya.controller.ts      # API endpoints
-├── services/
-│   └── tuya.service.ts         # Business logic
-├── interfaces/
-│   └── tuya.interface.ts       # TypeScript interfaces
-├── utils/
-│   └── tuya-signature.util.ts  # Signature generation
-└── app.module.ts               # Module configuration
+### Build production
+
+```bash
+npm run build
 ```
 
-## Lưu ý
+### Start production server
 
-- Đảm bảo cấu hình đúng `TUYA_CLIENT_ID` và `TUYA_SECRET` từ Tuya Developer Console
-- Access token sẽ được tự động refresh khi hết hạn
-- Tất cả API calls đều sử dụng HMAC-SHA256 signature theo chuẩn Tuya API
-- Service tự động xử lý authentication và token management
+```bash
+npm run start:prod
+```
 
-## Troubleshooting
+### Environment variables cho production
 
-### Lỗi 401 Unauthorized
-- Kiểm tra lại `TUYA_CLIENT_ID` và `TUYA_SECRET`
-- Đảm bảo access token chưa hết hạn
+```env
+NODE_ENV=production
+PORT=3000
+TUYA_BASE_URL=https://openapi.tuyaeu.com
+TUYA_CLIENT_ID=your_production_client_id
+TUYA_SECRET=your_production_secret
+TUYA_USER_ID=your_production_user_id
+TUYA_CODE=your_production_code
+```
 
-### Lỗi 500 Internal Server Error
-- Kiểm tra logs để xem chi tiết lỗi
-- Đảm bảo tất cả biến môi trường đã được cấu hình đúng
+## 📁 Cấu trúc dự án
 
-## License
+```
+tuya_be/
+├── src/
+│   ├── controllers/          # API controllers
+│   ├── services/            # Business logic
+│   ├── interfaces/          # TypeScript interfaces
+│   ├── utils/               # Utility functions
+│   └── main.ts              # Application entry point
+├── examples/                 # API usage examples
+├── test/                    # Test files
+├── env.example              # Environment variables template
+└── package.json             # Dependencies and scripts
+```
 
-MIT
+## 🔐 Bảo mật
+
+- **Environment Variables**: Không commit file `.env` vào repository
+- **API Keys**: Bảo vệ Tuya API credentials
+- **Input Validation**: Validate tất cả input từ client
+- **Error Handling**: Không expose sensitive information trong error messages
+
+## 🤝 Đóng góp
+
+1. Fork repository
+2. Tạo feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Tạo Pull Request
+
+## 📝 License
+
+Dự án này được cấp phép dưới [UNLICENSED](LICENSE) - xem file LICENSE để biết thêm chi tiết.
+
+## 📞 Hỗ trợ
+
+Nếu bạn gặp vấn đề hoặc có câu hỏi:
+
+1. Kiểm tra [Issues](../../issues) để xem có ai đã báo cáo vấn đề tương tự chưa
+2. Tạo issue mới nếu vấn đề chưa được báo cáo
+3. Liên hệ với maintainer của dự án
+
+## 🔗 Liên kết hữu ích
+
+- [Tuya IoT Platform Documentation](https://developer.tuya.com/en/docs/iot)
+- [NestJS Documentation](https://docs.nestjs.com/)
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
