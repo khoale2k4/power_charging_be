@@ -102,6 +102,44 @@ export class TuyaController {
     }
   }
 
+  @Get('switchOn/:deviceId')
+  async setSwitchOn(
+    @Param('deviceId') deviceId: string,
+    @Body() command: { code: string; value: any }
+  ) {
+    try {
+      return await this.tuyaService.sendDeviceCommand(
+        deviceId,
+        "switch",
+        true
+      );
+    } catch (error) {
+      throw new HttpException(
+        `Failed to send device command: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Get('switchOff/:deviceId')
+  async setSwitchOff(
+    @Param('deviceId') deviceId: string,
+    @Body() command: { code: string; value: any }
+  ) {
+    try {
+      return await this.tuyaService.sendDeviceCommand(
+        deviceId,
+        "switch",
+        false
+      );
+    } catch (error) {
+      throw new HttpException(
+        `Failed to send device command: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
   /**
    * Get device status
    */
