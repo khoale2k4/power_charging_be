@@ -18,7 +18,7 @@ import type {
 
 @Controller('tuya')
 export class TuyaController {
-  constructor(private readonly tuyaService: TuyaService) {}
+  constructor(private readonly tuyaService: TuyaService) { }
 
   /**
    * Get access token
@@ -27,6 +27,17 @@ export class TuyaController {
   async getAccessToken() {
     try {
       return await this.tuyaService.getAccessToken();
+    } catch (error) {
+      throw new HttpException(
+        `Failed to get access token: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+  @Get('auth/token1')
+  async getAccessToken1() {
+    try {
+      return await this.tuyaService.getAccessToken1();
     } catch (error) {
       throw new HttpException(
         `Failed to get access token: ${error.message}`,
@@ -120,6 +131,46 @@ export class TuyaController {
       );
     }
   }
+
+  // phone
+  // {
+  //     "commands": [
+  //   {
+  //   "code": "alarm_set_1",
+  //     "value": "BQAAZAcAAAA="
+  // },
+  //     ]
+  // }
+
+  // bicycle
+  // {
+  //     "commands": [
+  //         {
+  //             "code": "alarm_set_1",
+  //             "value": "BQAAZAcABdAAAA=="
+  //         }
+  //     ]
+  // }
+
+  // bike
+  //   {
+  //     "commands": [
+  //         {
+  //             "code": "alarm_set_1",
+  //             "value": "BQAAZAcCEgAAAA=="
+  //         }
+  //     ]
+  // }
+
+  // car
+  //   {
+  //     "commands": [
+  //         {
+  //             "code": "alarm_set_1",
+  //             "value": "BQAAZAcAB1MAAA=="
+  //         }
+  //     ]
+  // }
 
   @Get('switchOff/:deviceId')
   async setSwitchOff(

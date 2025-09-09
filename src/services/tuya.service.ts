@@ -94,11 +94,12 @@ export class TuyaService {
       't': timestamp,
       'sign': signature,
       'sign_method': 'HMAC-SHA256',
-      // 'Content-Type': 'application/json',
+      'Content-Type': 'application/json',
     };
 
     if (accessToken) {
       headers['access_token'] = accessToken;
+      console.log("accessToken ", accessToken);
     }
 
     return headers;
@@ -110,10 +111,11 @@ export class TuyaService {
   async getAccessToken(): Promise<TuyaTokenResponse> {
     const config = this.getTuyaConfig();
     const code = config.code;
-    const path = '/v1.0/authorize_token';
+    const path = '/v1.0/token';
     const queryParams = {
-      code,
-      grant_type: '3',
+      // code,
+      grant_type: '1',
+      terminal_id: '11'
     };
     const sortedPath = TuyaSignatureUtil.buildSortedUrl(path, queryParams);
 
@@ -121,7 +123,37 @@ export class TuyaService {
 
     try {
       const response = await this.httpClient.get<TuyaTokenResponse>(sortedPath, { headers });
-      
+
+      if (response.data.success) {
+        this.accessToken = response.data.result.access_token;
+        this.refreshToken = response.data.result.refresh_token;
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new HttpException(
+        `Failed to get access token: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+
+  async getAccessToken1(): Promise<TuyaTokenResponse> {
+    // const config = this.getTuyaConfig();
+    // const code = config.code;
+    const path = '/v1.0/token?grant_type=1';
+    // const queryParams = {
+    //   code,
+    //   grant_type: '3',
+    // };
+    // const sortedPath = TuyaSignatureUtil.buildSortedUrl(path, queryParams);
+
+    // const headers = this.generateHeaders('GET', sortedPath, null);
+
+    try {
+      const response = await this.httpClient.get<TuyaTokenResponse>(path);
+
       if (response.data.success) {
         this.accessToken = response.data.result.access_token;
         this.refreshToken = response.data.result.refresh_token;
@@ -147,7 +179,7 @@ export class TuyaService {
     const config = this.getTuyaConfig();
     const path = `/v1.0/token/${this.refreshToken}`;
     const timestamp = TuyaSignatureUtil.getTimestamp();
-    
+
     // For refresh token, use different signature calculation
     const str = config.clientId + timestamp;
     const hash = require('crypto').createHmac('sha256', config.secret);
@@ -163,7 +195,7 @@ export class TuyaService {
 
     try {
       const response = await this.httpClient.get<TuyaTokenResponse>(path, { headers });
-      
+
       if (response.data.success) {
         this.accessToken = response.data.result.access_token;
         this.refreshToken = response.data.result.refresh_token;
@@ -247,18 +279,74 @@ export class TuyaService {
     }
 
     const config = this.getTuyaConfig();
-    const path = `/v1.0/cloud/energy/micro/device/command/${deviceId}`;
-    const queryParams = {
-      code,
-      user_id: config.userId,
-      value: value.toString(),
-    };
-    const sortedPath = TuyaSignatureUtil.buildSortedUrl(path, queryParams);
+    const path = `/v1.0/iot-03/devices/${deviceId}/commands`;
+    const queryParams =
+    // {
+    //   "commands": [
+    //     {
+    //       "code": "switch",
+    //       "value": false
+    //     },
+    //     {
+    //       "code": "countdown_1",
+    //       "value": 0
+    //     },
+    //     {
+    //       "code": "relay_status",
+    //       "value": "last"
+    //     },
+    //     {
+    //       "code": "light_mode",
+    //       "value": "relay"
+    //     },
+    //     {
+    //       "code": "child_lock",
+    //       "value": false
+    //     },
+    //     {
+    //       "code": "cycle_time",
+    //       "value": ""
+    //     },
+    //     {
+    //       "code": "online_state",
+    //       "value": "online"
+    //     }
+    //   ]
+    // }
+    {
+      commands: [
+        {
+          code,
+          value
+        },
 
-    const headers = this.generateHeaders('POST', sortedPath, null, this.accessToken);
+        {
+          code: "countdown_1",
+          value: 2
+        },
+      ]
+    };
+    console.log(queryParams);
+    // const sortedPath = TuyaSignatureUtil.buildSortedUrl(path);//, queryParams);
+    // console.log(sortedPath);
+    console.log('this.accessToken ', this.accessToken);
+
+    // true 
+    // dmwpytvdv3y8hkypghss92ab2f62d53d738cd98cc7a1071416ba1757161078990POST
+    // 0bcc4f54cb06e6f9603360d93fa79ceca7da4be48118ca0d429f6f1a46867739
+
+    // / v1.0 / iot-03 / devices / bf54c3c6f12ac329464jzq / commands
+
+    // false
+    // dmwpytvdv3y8hkypghss92ab2f62d53d738cd98cc7a1071416ba1757161078990POST
+    // 0bcc4f54cb06e6f9603360d93fa79ceca7da4be48118ca0d429f6f1a46867739
+
+    // /v1.0/iot-03/devices/bf54c3c6f12ac329464jzq/commands
+
+    const headers = this.generateHeaders('POST', path, JSON.stringify(queryParams), this.accessToken);
 
     try {
-      const response = await this.httpClient.post<TuyaBaseResponse>(sortedPath, null, { headers });
+      const response = await this.httpClient.post<TuyaBaseResponse>(path, queryParams, { headers });
       console.log(headers);
       return response.data;
     } catch (error) {
@@ -278,7 +366,7 @@ export class TuyaService {
     }
 
     const config = this.getTuyaConfig();
-    const path = `/v1.0/cloud/energy/micro/device/command/${deviceId}`;
+    const path = `/v1.0/iot-03/devices/${deviceId}/status`;
     const queryParams = {
       user_id: config.userId,
       command_code: commandCode,
@@ -440,9 +528,9 @@ export class TuyaService {
     const headers = this.generateHeaders('DELETE', path, body, this.accessToken);
 
     try {
-      const response = await this.httpClient.delete<TuyaBaseResponse>(path, { 
+      const response = await this.httpClient.delete<TuyaBaseResponse>(path, {
         headers,
-        data: deleteData 
+        data: deleteData
       });
       return response.data;
     } catch (error) {

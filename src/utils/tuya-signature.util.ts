@@ -22,19 +22,19 @@ export class TuyaSignatureUtil {
     path: string
   ): string {
     // Build string to be signed
-    const str = 
-//     `nenhvcwjfxmpdtqyhwnk797a6dfaf31c4cd10038dd07d45a05be1756036854748POST
-// e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    const str =
+      //     `nenhvcwjfxmpdtqyhwnk797a6dfaf31c4cd10038dd07d45a05be1756036854748POST
+      // e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 
-// /v1.0/cloud/energy/micro/device/command/bf8017f97b3f5a6f52a8ih?code=switch&user_id=beu1755919785468Ht4d&value=true`;
-    this.buildStringToSign(
-      clientId,
-      accessToken,
-      timestamp,
-      method,
-      body,
-      path
-    );
+      // /v1.0/cloud/energy/micro/device/command/bf8017f97b3f5a6f52a8ih?code=switch&user_id=beu1755919785468Ht4d&value=true`;
+      this.buildStringToSign(
+        clientId,
+        accessToken,
+        timestamp,
+        method,
+        body,
+        path
+      );
     console.log('buildStringToSign');
     console.log(str);
 
@@ -75,13 +75,13 @@ export class TuyaSignatureUtil {
    * @returns SHA256 hash in hex format
    */
   private static calculateBodySha256(body: string): string {
-    if (!body || body.trim() === '') {
+    if (!body || body === '') {
       // Return fixed value for empty body
       return 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
     }
 
     const hash = crypto.createHash('sha256');
-    hash.update(body.trim());
+    hash.update(body); // Xóa .trim() ở đây
     return hash.digest('hex');
   }
 
